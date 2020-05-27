@@ -89,7 +89,7 @@ Stmt
 	: CompSt						{$$=$1;}
 	| IF LP Exp RP Stmt				{$$=new Node("Stmt_if",2,$3,$5);}
 	| IF LP Exp RP Stmt ELSE Stmt	{$$=new Node("Stmt_if_else",3,$3,$5,$7);}
-	| RETURN Exp SEMI				{$$=new Node("Stmt_return",1,$1);}
+	| RETURN Exp SEMI				{$$=new Node("Stmt_return",1,$2);}
 	| WHILE LP Exp RP Stmt			{$$=new Node("Stmt_while",2,$3,$5);}
 	| Exp SEMI						{$$=new Node("Stmt_exp",1,$1);}
 	;

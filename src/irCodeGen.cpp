@@ -44,7 +44,7 @@ void irCodeGenerator::genIrGlobalVal(Type type, Node* node){
     varNode* vnode = new varNode(ID, type);
     this->varNodes.insert(pair<string, varNode*>(ID, vnode));
     string varName = addID(ID);
-    Quad quad("", "var:", varName, "");
+    Quad quad("", "global:", varName, "");
     this->insertQuad(quad);
 
     if(node->children.size() > 1){
