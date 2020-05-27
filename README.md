@@ -6,3 +6,7 @@ $ mkdir build && cd build
 $ cmake .. & make -j
 ```
 
+mips vm: 
+
+http://courses.missouristate.edu/kenvollmar/mars/
+
