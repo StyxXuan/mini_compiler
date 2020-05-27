@@ -2,7 +2,7 @@ import os
 
 map = {}
 is_global = True
-file_path = "./src/interCode.txt"
+file_path = "mid.txt"
 line_num = 0
 sp = 0
 codes = []
@@ -43,7 +43,7 @@ def get_var_add(var_name):
 
 def get_var_reg(var_name):
     if var_name[0] == "#":
-        return "a"+var_name[1]
+        return "$a"+var_name[1]
     
     add = get_var_add(var_name)
     bias = add - sp
@@ -107,7 +107,8 @@ def genTarCodeTriExp(tokens):
     save_var_reg(tokens[0], reg_des)
 
 def genTarCodeCallExp(tokens):
-    codes.append("j " + tokens[3])
+    codes.append("move $ra, $pc")
+    codes.append("jal " + tokens[3])
     reg_des = "$t"+str(applyReg())
     codes.append("add " + reg_des +",$v0"+",$zero")
 
@@ -132,7 +133,7 @@ def genTarCode(tokens):
 
     elif tokens[0] == "IF_NOT":
         reg1 = get_var_reg(tokens[1])
-        codes.append("beq $"+reg1+",$zero "+tokens[3])
+        codes.append("beq "+reg1+",$zero "+tokens[3])
 
     elif tokens[0] == "Label":
         codes.append(tokens[1]+":")
@@ -145,7 +146,7 @@ def genTarCode(tokens):
 
     elif tokens[0] == "ARG":
         reg_1 = get_var_reg(tokens[1])
-        a = "a" + str(inputReg())
+        a = "$a" + str(inputReg())
         codes.append("move " + a + ","+ reg_1)
         line_num += 1
     else:
@@ -164,6 +165,11 @@ with open(file_path, 'r') as f:
     for line in f:
         line = line.strip()
         tokens = line.split(" ")
+        if "" in tokens:
+            tokens.remove('')
+        
+        # print(tokens)
+
         genTarCode(tokens)
 
     for code in codes:
