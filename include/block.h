@@ -7,30 +7,17 @@
 #include <list>
 #include <map>
 using namespace std;
+
+enum Type{
+    INT_TYPE, FLOAT_TYPE, VOID_TYPE, Identifier, STRUCT_TYPE
+};
+
 union valType{
     int intVal;
     float floatVal; 
     bool isVoid;
+    bool isStr;
 };
-
-enum Type{
-    INT_TYPE, FLOAT_TYPE, VOID_TYPE, Identifier
-};
-
-class C_Value{
-public:
-    C_Value(valType val, Type type){
-        this->val = val;
-        this->type = type;
-        this->varName = "";
-    }
-    C_Value(){};
-
-    valType val;
-    Type type;
-    string varName;
-};
-
 
 class varNode{
 public:
@@ -61,7 +48,43 @@ public:
     valType varValue;
 };
 
+class strNode{
+public:
+    strNode(string name){
+        this->name = name;
+        this->memVarNum = 0;
+    }
 
+    strNode(strNode *snode){
+        this->name = snode->name;
+        this->varList = snode->varList;
+    }
+
+    
+    void addVar(varNode *vnode){
+        varList.insert(pair<string, int>(vnode->name, memVarNum++));
+    }
+
+    string name;
+    int memVarNum;
+    map<string, int> varList;
+};
+
+class strVar{
+public:
+    strVar(string varName, strNode *snode){
+        this->varName = varName;
+        this->snode = snode;
+    }
+
+    void setVarName(map<string, string> varNameMap){
+        this->varNameMap = varNameMap;
+    } 
+
+    map<string, string> varNameMap;
+    string varName;
+    strNode *snode;
+};
 
 class funNode{
 public:
@@ -82,20 +105,37 @@ public:
         this->paralist.insert(pair<string, string>(vnode->name, paramName));
     }
 
+    void addStrVar(strVar *svar){
+        this->strVarMap.insert(pair<string, strVar*>(svar->varName, svar));
+    }
 
     string name;
     Type type;
     int lineNum;
     map<string, string> paralist;
     map<string, varNode*> localVar;
+    map<string, strVar*> strVarMap;
     int paraNum;
 };
 
-// typedef struct{
-//     string name;
-//     string type;
-//     vector<valType> vals;
-// }arrayNode;
+
+
+
+class C_Value{
+public:
+    C_Value(valType val, Type type){
+        this->val = val;
+        this->type = type;
+        this->varName = "";
+    }
+    C_Value(){};
+
+    valType val;
+    Type type;
+    string varName;
+};
+
+
 
 class Quad{
 public:

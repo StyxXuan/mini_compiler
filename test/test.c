@@ -1,21 +1,22 @@
-int b;
-int fact(int p){
-    int c = 0;
-    c = p + 1;
-    return c;
+struct a{
+    int p;
+    int t;
+};
+
+int fact(int z){
+    if(z > 1){
+        return fact(z-1)*z;
+    }else{
+        return 1;
+    }
 }
 
-int main(){
-    int a = 10 + 24*2;
+int main()
+{
+    struct a b;
     int d;
-    if(a < 0){
-        d = 10;
-    }else{
-        d = fact(9);
-    }
-
-    while(a>0){
-        a = a+1;
-    }
+    b.p = 3;
+    b.t = -2;
+    d = fact(fact(b.p)) + fact(b.t) - 20;
 }
 

@@ -6,6 +6,16 @@ int fact(int a){
         return 1;
     }
 }
+
+struct Str{
+    int stra;
+    int strb;
+};
+
 int main(){
-    int a = fact(3);
+    struct Str p;
+    p.stra = 1;
+    p.strb = 2;
+
+    int a = fact(p.stra);
 }

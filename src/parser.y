@@ -26,7 +26,7 @@ Node* root = NULL;
 %token <node> ID
 
 %type <node> Program ExtDefList ExtDef ExtDecList
-// %type <Node> Specifier StructSpecifier OptTag Tag
+%type <node> Specifier StructSpecifier
 %type <node> VarDec FunDec VarList ParamDec
 %type <node> CompSt StmtList Stmt
 %type <node> DefList Def DecList Dec
@@ -48,18 +48,28 @@ ExtDef // Denote for a Global Viriable, Struct, Function
 	// Global viriable
 	: TYPE ExtDecList SEMI		{$$=new Node("ExtDef",2,$1,$2,2);}
 	// Function Decleration
-	| TYPE FunDec CompSt		{$$=new Node("ExtDef",3,$1,$2,$3);}  
+	| TYPE FunDec CompSt		{$$=new Node("ExtDef",3,$1,$2,$3);} 
+	| StructSpecifier SEMI		{$$=new Node("ExtDefStr",1,$1);}   
 	;
+
+Specifier
+	: TYPE							{$$=$1;}
+	| StructSpecifier				{$$=$1;}
+
+StructSpecifier
+	: STRUCT ID LC DefList RC	{$$=new Node("StructSpecifier",2,$2,$4);}
+	| STRUCT ID						{$$=new Node("StructSpecifier",1,$2);}
+
 
 ExtDecList
 	: VarDec						{$$=new Node("ExtDecList",1,$1);}
 	| VarDec COMMA ExtDecList		{$$=new Node("ExtDecList",2,$1,$3);}
 
 VarDec
-	// :ID								{$$=new Node("VarDec",1,$1);}
+	// :ID							{$$=new Node("VarDec",1,$1);}
 	:ID								{$$=$1;}
 	// array
-	// | VarDec LB INT RB				{$$=new Node("VarDec",4,$1,$2,$3,$4);}
+	// | VarDec LB INT RB			{$$=new Node("VarDec",4,$1,$2,$3,$4);}
 	;
 
 FunDec
@@ -72,7 +82,7 @@ VarList
 	| ParamDec						{$$=new Node("VarList",1,$1);}
 
 ParamDec
-	:TYPE VarDec				{$$=new Node("ParamDec",2,$1,$2);}
+	:Specifier VarDec				{$$=new Node("ParamDec",2,$1,$2);}
 	;
 
 
@@ -100,8 +110,9 @@ DefList
 	;
 
 Def
-	:TYPE DecList SEMI			{$$=new Node("Def",2,$1,$2);}
+	:Specifier DecList SEMI			{$$=new Node("Def",2,$1,$2);}
 	;
+
 
 DecList
 	:Dec							{$$=new Node("DecList",1,$1);}
@@ -121,6 +132,7 @@ Exp
 	| Exp STAR Exp					{$$=new Node("Ternary_Exp",3,$1,$2,$3);}
 	| Exp DIV Exp					{$$=new Node("Ternary_Exp",3,$1,$2,$3);}
 	| Exp RELOP Exp					{$$=new Node("Ternary_Exp",3,$1,$2,$3);}
+	| Exp DOT ID					{$$=new Node("Dot_Exp",2,$1,$3);}
 	| LP Exp RP						{$$=$2;}
 	| MINUS Exp						{$$=new Node("Binary_Exp",2,$1,$2);}
 	| NOT Exp						{$$=new Node("Binary_Exp",2,$1,$2);}

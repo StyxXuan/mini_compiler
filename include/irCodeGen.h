@@ -23,6 +23,10 @@ public:
     void genIrDecList(funNode *func, Type type, Node *node);
     void genIrDec(funNode *func, Type type, Node *node);
 
+    strNode* genIrStructSpecifier(Node* node);
+    void genIrStrDefList(strNode* snode, Node* node);
+
+
     void genIrVarList(funNode *func, Node *node);
     void genIrParamDec(funNode *func, Node *node);
 
@@ -49,12 +53,16 @@ public:
     string toVarName (string ID);
     string addID(string ID);
     void writeToFile(string filePath);
+    void addStrNode(strNode* snode){
+        this->strMap.insert(pair<string, strNode*>(snode->name, snode));
+    }
 
 private:
     // void writeIrFile();
     map<string, funNode*> funcNodes;
     map<string, varNode*> varNodes;
     map<string, string> IDVarMap;
+    map<string, strNode*> strMap;
     
     list<Quad> IrCodes;
     int lineNum;

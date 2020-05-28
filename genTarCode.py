@@ -137,6 +137,13 @@ def genTarCodeTriExp(tokens):
     save_var_value(tokens[0], reg_res)
 
 def genTarCodeCallExp(tokens):
+    if(tokens[2] == "-"):
+        reg1 = get_var_value(tokens[2])
+        reg_res = applyReg()
+        codes.append("sub " + reg_res +",$zero,"+reg1)
+        save_var_value(tokens[0], reg_res)
+        return
+
     release_inputReg()
     save_var_value("temp_ra", "$ra")
     codes.append("jal " + tokens[3])

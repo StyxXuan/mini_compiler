@@ -32,7 +32,55 @@ void irCodeGenerator::genIrParserTree(Node* node){
         }else{
             genIrFunDec(type, node->children[1], node->children[2]);
         }
+    }else if(!node->getType().compare("ExtDefStr")){
+        strNode *snode = genIrStructSpecifier(node->children[0]);
+        // Quad quad("", "struct:", snode->name, to_string(snode->memVarNum));
+        // this->insertQuad(quad);
+        cout << "here end" << endl;
     }
+}
+
+strNode* irCodeGenerator::genIrStructSpecifier(Node* node){
+    if(DEBUG)
+        cout << ">> genIrStructSpecifier" << endl;
+    
+    
+
+    string ID = node->children[0]->getVal();
+    strNode *snode;
+    if(node->children.size() > 1){
+        snode = new strNode(ID);
+        genIrStrDefList(snode, node->children[1]);
+        this->addStrNode(snode);
+    }else{
+        snode = this->strMap[ID];
+    }
+    if(DEBUG)
+        cout << "<< end genIrStructSpecifier" << endl;
+
+    return snode;
+}
+
+// DefList -> Def DefList | empty
+void irCodeGenerator::genIrStrDefList(strNode* snode, Node* node){
+    if(DEBUG)
+        cout << ">> genIrStrDefList" << endl;
+
+    if(!node->getType().compare("empty"))
+        return;
+
+    if(node->children.size()>1){
+        genIrStrDefList(snode, node->children[1]);
+    }
+
+    Type type = getType(node->children[0]->children[0]);
+    string id = node->children[0]->children[1]->children[0]->children[0]->getVal();
+    // cout << "var id" << node->children[0]->children[1]->children[0]->getType() << endl;
+    // cout << "var id" << id << endl;
+    varNode* vnode = new varNode(id, type);
+    snode->addVar(vnode);
+    if(DEBUG)
+        cout << "<< end genIrStrDefList" << endl;
 }
 
 // ExtDecList -> VarDec | VarDec, ExtDecList
@@ -87,18 +135,30 @@ void irCodeGenerator::genIrVarList(funNode *func, Node *node){
     genIrParamDec(func, node->children[0]);
 }
 
-// ParamDec -> TYPE VarDec
-
+// ParamDec -> Specifier VarDec
 void irCodeGenerator::genIrParamDec(funNode *func, Node *node){
     // :TYPE VarDec
     if(DEBUG)
         cout << ">> genIrParamDec" << endl;
         
-    Type type = this->getType(node->children[0]);
-    string ID = node->children[1]->getVal();
-    varNode* vnode = new varNode(ID, type);
-    func->addParaList(vnode);
+    if(!node->children[0]->getType().compare("TYPE")){
+        Type type = this->getType(node->children[0]);
+        string ID = node->children[1]->getVal();
+        varNode* vnode = new varNode(ID, type);
+        func->addParaList(vnode);
+    }else{
+        Type type = STRUCT_TYPE;
+        string ID = node->children[1]->getVal();
+        varNode* vnode = new varNode(ID, type);
+        Node* strSpecifer = node->children[0];
+         cout <<"here now" << endl; 
+        strNode *snode = new strNode(genIrStructSpecifier(strSpecifer));
+        cout <<"here now" << endl; 
+        strVar *svar = new strVar(ID, snode);
+        func->addStrVar(svar);
+    }
 }
+
 
 // CompSt -> DefList StmtList
 void irCodeGenerator::genIrCompSt(funNode *func, Node* node){
@@ -116,7 +176,6 @@ void irCodeGenerator::genIrCompSt(funNode *func, Node* node){
 
     if(DEBUG)
         cout << ">> end genIrCompSt " << node->children.size() << endl;
-
 }
 
 // DefList -> Def DefList | empty
@@ -136,14 +195,35 @@ void irCodeGenerator::genIrLocalDef(funNode *func, Node* node){
         cout << ">> end genIrLocalDef " << node->children.size() << endl;
 }
 
-// Def->TYPE DecList;
+// Def->Specifier DecList;
 void irCodeGenerator::genIrDef(funNode *func, Node* node){
     if(DEBUG)
         cout << ">> genIrDef " << node->children.size() << endl;
 
+    if(!node->children[0]->getType().compare("TYPE")){
+        Type type = getType(node->children[0]);
+        genIrDecList(func, type, node->children[1]);
+    }else{
+        strNode* snode = genIrStructSpecifier(node->children[0]);
+        // for struct, only one dec once
+        string ID = node->children[1]->children[0]->children[0]->getVal();
+        strVar *svar = new strVar(ID, snode);
+        cout << "here 1" << endl;
+        cout << ID << endl;
+        map<string, int>::iterator iter;
 
-    Type type = getType(node->children[0]);
-    genIrDecList(func, type, node->children[1]);
+        for(iter=snode->varList.begin(); iter!=snode->varList.end(); iter++){
+            string VarName = ID + "." + iter->first; 
+            // cout <<  "addID: " << VarName << endl;
+            string varName = addID(VarName);
+            Quad quad("", "var:", varName, "");
+            this->insertQuad(quad);
+        }
+
+        func->addStrVar(svar);
+        // Quad quad("", "struct: "+snode->name, ID, "");
+        // this->insertQuad(quad);
+    }
 
     if(DEBUG)
         cout << ">> end genIrDef" << endl;
@@ -292,6 +372,16 @@ C_Value irCodeGenerator::genIrExp(funNode* func, Node *node){
         value.varName = getTempVar();
         Quad quad(value.varName, "CALL", node->children[0]->getVal(), "");
         this->insertQuad(quad);
+        return value;
+    }else if(!node->getType().compare("Dot_Exp")){
+        string ID_1 = node->children[0]->getVal();
+        string ID_2 = node->children[1]->getVal();
+        string varName = ID_1 + "." + ID_2;
+        cout << "name: " << varName << endl;
+        varName = toVarName(varName);
+        cout << "name: " << varName << endl;
+
+        value.varName = varName;
         return value;
     }
 
