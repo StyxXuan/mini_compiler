@@ -36,8 +36,7 @@ def applyReg():
 
 def inputReg():
     global reg_a
-    reg_a += 1
-    return reg_a-1
+    return reg_a
 
 def releaseReg():
     global temp_reg
@@ -138,6 +137,7 @@ def genTarCodeTriExp(tokens):
     save_var_value(tokens[0], reg_res)
 
 def genTarCodeCallExp(tokens):
+    release_inputReg()
     save_var_value("temp_ra", "$ra")
     codes.append("jal " + tokens[3])
     reg_res = applyReg()
@@ -156,39 +156,47 @@ def genTarCode(tokens):
     global global_def
     global line_num
     global sp
+    global reg_a
     releaseReg()
+
     if tokens[0] == "var:":
+        release_inputReg()
         print("var:   " +  tokens[1])
         add_var(tokens[1])
 
     elif tokens[0] == "Func:":
+        release_inputReg()
         codes.append(tokens[1]+":")
         codes.append("subi $sp,$sp,80")
         for i in range(3):
             save_var_value("temp_a"+str(i), "$a"+str(i))
 
-        release_inputReg()
 
     elif tokens[0] == "RETURN":
+        release_inputReg()
         reg_res = get_var_value(tokens[1])
         codes.append("move $v0,"+reg_res)
         codes.append("jr $ra")
         release_inputReg()
 
     elif tokens[0] == "IF_NOT":
+        release_inputReg()
         reg_res = get_var_value(tokens[1])
         codes.append("beq "+reg_res+",$zero "+tokens[3])
 
     elif tokens[0] == "Label":
+        release_inputReg()
         codes.append(tokens[1]+":")
 
     elif tokens[0] == "GOTO":
+        release_inputReg()
         codes.append("j " + tokens[1])
 
     elif tokens[0] == "ARG":
         reg_1 = get_var_value(tokens[1])
         a = "$a" + str(inputReg())
         codes.append("move " + a + ","+ reg_1)
+        reg_a += 1
     else:
         if len(tokens) == 3:
             genTarCodeBinExp(tokens)

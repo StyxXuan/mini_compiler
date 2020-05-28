@@ -6,7 +6,7 @@
 #include <map>
 #include <list>
 #include <fstream>
-#define DEBUG false
+#define DEBUG true
 
 class irCodeGenerator{
 public:

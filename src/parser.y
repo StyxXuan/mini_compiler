@@ -68,7 +68,7 @@ FunDec
 	;
 
 VarList
-	:ParamDec COMMA VarList			{$$=new Node("VarList",3,$1,$2,$3);}
+	:ParamDec COMMA VarList			{$$=new Node("VarList",2,$1,$3);}
 	| ParamDec						{$$=new Node("VarList",1,$1);}
 
 ParamDec

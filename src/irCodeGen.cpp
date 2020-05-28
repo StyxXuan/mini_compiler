@@ -75,7 +75,10 @@ void irCodeGenerator::genIrFunDec(Type type, Node* FunDec, Node *compSt){
 // VarList -> ParamDec, VarList | ParamDec
 void irCodeGenerator::genIrVarList(funNode *func, Node *node){
     if(DEBUG)
-        cout << ">> genIrVarList" << endl;
+        cout << ">> genIrVarList, " << node->children.size() << endl;
+
+    if(node->children.size()==0)
+        return;
 
     if(node->children.size() > 1){
         genIrVarList(func, node->children[1]);
