@@ -1,6 +1,7 @@
 #include"compiler.hpp"
 #include"irCodeGen.h"
 #include "tclap/CmdLine.h"
+#include "saveTree.h"
 
 extern FILE *yyin;
 extern Node *root;
@@ -41,6 +42,10 @@ int main(int argc, char **argv)
   yyparse();
   cout<<endl<<endl;  
 
+  saveTree s(root);
+  s.genJson(0, root, false);
+  s.writeToFile("../test.json");
+  
   irCodeGenerator irG;
   irG.genIrParserTree(root);
 

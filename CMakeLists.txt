@@ -25,6 +25,7 @@ add_executable(
     src/main.cpp
     src/irCodeGen.cpp
     src/parserTreeNode.cpp
+    src/saveTree.cpp
 )
 
 target_link_libraries(
