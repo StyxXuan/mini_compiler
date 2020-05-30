@@ -168,7 +168,7 @@ def genTarCode(tokens):
 
     if tokens[0] == "var:":
         release_inputReg()
-        print("var:   " +  tokens[1])
+        # print("var:   " +  tokens[1])
         add_var(tokens[1])
 
     elif tokens[0] == "Func:":

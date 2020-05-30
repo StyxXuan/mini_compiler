@@ -1,0 +1,15 @@
+ Func: cal_bmi 
+t0 := #1 + #0
+ RETURN t0 
+ Func: main 
+ var: var0 
+ var: var1 
+ var: var2 
+t0 := 1  
+var0 := t0  
+t1 := 2  
+var1 := t1  
+ ARG var0 
+ ARG var1 
+t2 := CALL  cal_bmi
+var2 := t2  

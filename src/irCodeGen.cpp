@@ -36,7 +36,6 @@ void irCodeGenerator::genIrParserTree(Node* node){
         strNode *snode = genIrStructSpecifier(node->children[0]);
         // Quad quad("", "struct:", snode->name, to_string(snode->memVarNum));
         // this->insertQuad(quad);
-        cout << "here end" << endl;
     }
 }
 
@@ -208,8 +207,6 @@ void irCodeGenerator::genIrDef(funNode *func, Node* node){
         // for struct, only one dec once
         string ID = node->children[1]->children[0]->children[0]->getVal();
         strVar *svar = new strVar(ID, snode);
-        cout << "here 1" << endl;
-        cout << ID << endl;
         map<string, int>::iterator iter;
 
         for(iter=snode->varList.begin(); iter!=snode->varList.end(); iter++){
@@ -377,9 +374,7 @@ C_Value irCodeGenerator::genIrExp(funNode* func, Node *node){
         string ID_1 = node->children[0]->getVal();
         string ID_2 = node->children[1]->getVal();
         string varName = ID_1 + "." + ID_2;
-        cout << "name: " << varName << endl;
         varName = toVarName(varName);
-        cout << "name: " << varName << endl;
 
         value.varName = varName;
         return value;

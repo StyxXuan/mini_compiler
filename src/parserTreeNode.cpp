@@ -13,7 +13,7 @@
 Node::Node(string type, int eleNum,...){
     this->type = type;
     // this->val = NULL;
-    cout << "type: " << type << endl;
+    // cout << "type: " << type << endl;
     this->val = "";
     va_list ap;
     va_start(ap, eleNum);
@@ -28,7 +28,7 @@ Node::Node(string type, int eleNum,...){
 
 Node::Node(string type, string val){
     // this->val = new Element(type, val); 
-    cout << "type: "<< type << "val: " << val << endl; 
+    // cout << "type: "<< type << "val: " << val << endl; 
     this->type = type;
     this->val = val;
 }

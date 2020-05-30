@@ -5,7 +5,7 @@ saveTree::saveTree(Node* node){
 }
 
 void saveTree::addJson(string line){
-    cout << line << endl;
+    // cout << line << endl;
     this->jsonLine.push_back(line);
 }
 
@@ -17,10 +17,10 @@ void saveTree::genJson(int level, Node *node, bool hasSib){
     addJson(jsonTab+"{");
     
     if(node->children.size()!=0){
-        addJson(jsonTab+"\t\"id\": \"" + id +"\"" + ",");
+        addJson(jsonTab+"\t\"label\": \"" + id +"\"" + ",");
         addJson(jsonTab+"\t\"children\": [");
     }else
-        addJson(jsonTab+"\t\"id\": \"" + id +"\"");
+        addJson(jsonTab+"\t\"label\": \"" + id +"\"");
 
     for(int j=0; j<node->children.size(); j++){
         if(j==(node->children.size()-1)){

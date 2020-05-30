@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Vis</title>
+  </head>
+  <body>
+    <input type="file" id="fileInput" />
+
+    <div id="mountNode"></div>
+    <script src="https://gw.alipayobjects.com/os/antv/pkg/_antv.g6-3.1.0/build/g6.js"></script>
+    <script>
+      // 定义数据源
+      // 创建 G6 图实例
+      let data = {};
+      const input = document.querySelector("#fileInput");
+      fileInput.onchange = function () {
+        const file = this.files[0];
+        if (!!file) {
+          const reader = new FileReader();
+          reader.readAsText(file);
+          reader.onload = () => {
+            data = JSON.parse(reader.result);
+            // console.log(data);
+
+            console.log(data);
+            const graph = new G6.TreeGraph({
+              container: "mountNode",
+              width: 1200,
+              height: 800,
+              modes: {
+                default: [
+                  {
+                    type: "collapse-expand",
+                    onChange: function onChange(item, collapsed) {
+                      const data = item.get("model").data;
+                      data.collapsed = collapsed;
+                      return true;
+                    },
+                  },
+                  "drag-canvas",
+                  "zoom-canvas",
+                ],
+              },
+              defaultNode: {
+                size: 26,
+                anchorPoints: [
+                  [0, 0.5],
+                  [1, 0.5],
+                ],
+                style: {
+                  fill: "#C6E5FF",
+                  stroke: "#5B8FF9",
+                },
+                labelCfg: {
+                  style: {
+                    fill: "#EEEEFE",
+                  },
+                },
+              },
+              defaultEdge: {
+                type: "cubic-horizontal",
+                style: {
+                  stroke: "#A3B1BF",
+                },
+              },
+              layout: {
+                type: "compactBox",
+                direction: "LR",
+                // getId: function getId(d) {
+                //   return d.id;
+                // },
+                getHeight: function getHeight() {
+                  return 16;
+                },
+                getWidth: function getWidth() {
+                  return 16;
+                },
+                getVGap: function getVGap() {
+                  return 10;
+                },
+                getHGap: function getHGap() {
+                  return 100;
+                },
+              },
+            });
+            graph.node(function (node) {
+              return {
+                // label: node.id,
+                labelCfg: {
+                  offset: 10,
+                  position:
+                    node.children && node.children.length > 0
+                      ? "left"
+                      : "right",
+                },
+              };
+            });
+
+            graph.data(data);
+            graph.render();
+          };
+        }
+      };
+    </script>
+  </body>
+</html>

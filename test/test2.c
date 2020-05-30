@@ -1,21 +1,17 @@
-int fact(int a){
-    if(a>1){
-        int b = fact(a-1);
-        return a*b;
-    }else{
-        return 1;
-    }
-}
-
-struct Str{
-    int stra;
-    int strb;
+struct person{
+    int height;
+    int weight;
 };
 
-int main(){
-    struct Str p;
-    p.stra = 1;
-    p.strb = 2;
+int cal_bmi(int h, int w){
+    return w / (h*h);
+}
 
-    int a = fact(p.stra);
+int main(){
+    struct person a;
+    int result;
+    a.height = 10;
+    a.weight = 40;
+
+    result = cal_bmi(a.height, a.weight);
 }
