@@ -26,6 +26,9 @@ WHITESPACE               ([\t\r\n]+)
 "return"		{return RETURN; }
 "while"		{return WHILE; }
 "struct"	{return STRUCT;}
+"for"	{return FOR;}
+"do"	{return DO;}
+
 
 ";"                 { return SEMI; }
 ","                 { return COMMA; }

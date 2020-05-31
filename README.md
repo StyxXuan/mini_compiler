@@ -3,7 +3,7 @@
 ```shell
 $ cd /path/to/this/repo
 $ mkdir build && cd build
-$ cmake .. & make -j
+$ cmake .. && make -j
 $ ./compiler -s ../test/test.c -d ../mid.txt 
 ```
 

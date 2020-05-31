@@ -277,7 +277,7 @@ void irCodeGenerator::genIrStateList(funNode* func, Node *node){
 }
 
 // Stmt -> Exp; | RETURN Exp | IF(Exp) stmt | IF(EXP) Stmt ELSE Stmt 
-// | WHILE (Exp) Stmt | CompSt  
+// | WHILE (Exp) Stmt | CompSt  | For | do_while
 void irCodeGenerator::genIrState(funNode* func, Node *node){
     if(DEBUG)
         cout << ">> genIrState" << endl;
@@ -294,6 +294,10 @@ void irCodeGenerator::genIrState(funNode* func, Node *node){
         genIrWhile(func, node);
     }else if(!node->getType().compare("CompSt")){
         genIrCompSt(func, node);
+    }else if(!node->getType().compare("Stmt_for")){
+        genIrFor(func, node);
+    }else if(!node->getType().compare("Stmt_do_while")){
+        genIrDoWhile(func, node);
     }
 }
 
@@ -360,6 +364,13 @@ C_Value irCodeGenerator::genIrExp(funNode* func, Node *node){
         this->insertQuad(quad);
         return value;
     }else if(!node->getType().compare("Fun_Arg_Exp")){
+        if (!node->children[0]->getVal().compare("Print"))
+        {
+            C_Value exp = genIrExp(func, node->children[1]->children[0]);
+            Quad quad("", "Print", exp.varName, "");
+            this->insertQuad(quad);
+            return exp;
+        }
         genIrArgs(func, node->children[1]);
         value.varName = getTempVar();
         Quad quad(value.varName, "CALL", node->children[0]->getVal(), "");
@@ -463,6 +474,49 @@ void irCodeGenerator::genIrWhile(funNode* func, Node *node){
     this->insertQuad(quad4); 
 }
 
+void irCodeGenerator::genIrFor(funNode* func, Node *node){
+    if(DEBUG)
+        cout << ">> genIrWhile" << endl;
+
+    string label1 = getLabel();
+    string label2 = getLabel();
+
+    C_Value exp = genIrExp(func, node->children[0]); 
+    Quad quad1("", "Label", label1, "");
+    this->insertQuad(quad1);
+    C_Value exp2 = genIrExp(func, node->children[1]); 
+    Quad quad2("IF_NOT", exp2.varName, "GOTO", label2);
+    this->insertQuad(quad2); 
+
+    genIrState(func, node->children[3]);
+    C_Value exp3 = genIrExp(func, node->children[2]); 
+    Quad quad3("", "", "GOTO", label1);
+    this->insertQuad(quad3);
+    Quad quad4("", "Label", label2, "");
+    this->insertQuad(quad4); 
+}
+
+void irCodeGenerator::genIrDoWhile(funNode* func, Node *node){
+    if(DEBUG)
+        cout << ">> genIrWhile" << endl;
+
+    string label1 = getLabel();
+    string label2 = getLabel();
+
+    Quad quad1("", "Label", label1, "");
+    this->insertQuad(quad1);
+
+    genIrState(func, node->children[0]);
+
+    C_Value exp = genIrExp(func, node->children[1]); 
+    Quad quad2("IF_NOT", exp.varName, "GOTO", label2);
+    this->insertQuad(quad2); 
+
+    Quad quad3("", "", "GOTO", label1);
+    this->insertQuad(quad3);
+    Quad quad4("", "Label", label2, "");
+    this->insertQuad(quad4); 
+}
 	
 Type irCodeGenerator::getType(Node *node){
     if(DEBUG)

@@ -6,7 +6,7 @@
 #include <map>
 #include <list>
 #include <fstream>
-#define DEBUG true
+#define DEBUG false
 
 class irCodeGenerator{
 public:
@@ -39,6 +39,8 @@ public:
     void genIrIf(funNode *func, Node *node);
     void genIrIfElse(funNode *func, Node *node);
     void genIrWhile(funNode *func, Node *node);
+    void genIrFor(funNode *func, Node *node);
+    void genIrDoWhile(funNode *func, Node *node);
     void genIrReturn(funNode *func, Node *node);
 
     Type getType(Node *node);

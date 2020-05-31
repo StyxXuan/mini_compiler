@@ -204,6 +204,17 @@ def genTarCode(tokens):
         a = "$a" + str(inputReg())
         codes.append("move " + a + ","+ reg_1)
         reg_a += 1
+    elif tokens[0] == "Print":
+        reg_1 = get_var_value(tokens[1])
+        codes.append("move $a0,"+reg_1)
+        codes.append("li $v0,1")
+        codes.append("syscall")
+
+        codes.append("la $a0,LB")
+        codes.append("li $v0,4")
+        codes.append("syscall")
+        reg_temp = get_var_value("temp_a0")
+        codes.append("move $a0,"+reg_temp)
     else:
         if len(tokens) == 3:
             genTarCodeBinExp(tokens)
@@ -218,9 +229,9 @@ def add_global_var(tokens):
     codes.append(tokens[1]+":   "+".word")
     globalVarList.append(tokens[1])
 
-
 with open(file_path, 'r') as f:
     codes.append(".data")
+    codes.append("LB: .asciiz \"\\n\"")
     for line in f:
         line = line.strip()
         tokens = line.split(" ")

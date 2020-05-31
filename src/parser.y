@@ -22,7 +22,7 @@ Node* root = NULL;
 %token <node> LP RP LB RB LC RC
 %token <node> STRUCT
 %token <node> RETURN
-%token <node> IF ELSE WHILE
+%token <node> IF ELSE WHILE FOR DO
 %token <node> ID
 
 %type <node> Program ExtDefList ExtDef ExtDecList
@@ -101,6 +101,8 @@ Stmt
 	| IF LP Exp RP Stmt ELSE Stmt	{$$=new Node("Stmt_if_else",3,$3,$5,$7);}
 	| RETURN Exp SEMI				{$$=new Node("Stmt_return",1,$2);}
 	| WHILE LP Exp RP Stmt			{$$=new Node("Stmt_while",2,$3,$5);}
+	| FOR LP Exp SEMI Exp SEMI Exp RP Stmt			{$$=new Node("Stmt_for",4,$3,$5,$7,$9);}
+	| DO Stmt WHILE LP Exp RP SEMI	{$$=new Node("Stmt_do_while",2,$2,$5);}
 	| Exp SEMI						{$$=new Node("Stmt_exp",1,$1);}
 	;
 
