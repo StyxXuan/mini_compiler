@@ -1,19 +1,29 @@
 %{
 #include <iostream>
 #include "compiler.hpp"
+#include "errorHandler.h"
 #include "parserTreeNode.h"
 #pragma clang diagnostic ignored "-Wdeprecated-register"
 void yyerror(char const *s);
+extern string line;
 using namespace std;
 %}
-
+%option yylineno
 IDENTIFIER               ([_a-zA-Z][_a-zA-Z0-9]*)
-ASSIGNMENT_OPERATOR      (([<>][<>]|[*\/%+\-&^|])[=])
+ASSIGNMENT_OPERATOR      (([<][<]|[>][>]|[*\/%+\-&^\|])[=])
 INTEGERSUFFIX            ([uU][lL]|[lL][uU]|[uUlL])
-DECIMALCONSTANT          ([1-9][0-9]*)
+DECIMALCONSTANT 		 ([1-9][0-9]*|[0])
+FLOATCONSTANT            ([0-9]+\.[0-9]*)
 OCTALCONSTANT            ([0][0-7]*)
 HEXCONSTANT              ([0][xX][0-9A-Fa-f]+)
-WHITESPACE               ([\t\r\n]+)
+CHARCONSTANT 			 ([']([\\]([abfnrt0?\\'"]|[x][0-9a-fA-F]{2}|[0-7]{3})|[^'\\])['])
+STRINGLITERAL 			 (["]([\\]([abfnrt0?\\'"]|[x][0-9a-fA-F]{2}|[0-7]{3})|[^'\\])*["])
+WHITESPACE 				 [ \t\r]+
+MultiLineAnnotate 		 "/*"("/"*)([^*/]|[^*]"/"|"*"[^/])*("*"*)"*/"
+SingleLineAnnotate       "//"(.*)$
+ERROR 					 .
+NEWLINE					 [\n]
+EXCEPT					 [^\n]+
 %%
 "/*"           {}
 "//"[^\n]*     {}
@@ -61,17 +71,21 @@ WHITESPACE               ([\t\r\n]+)
 "/"		     {yylval.node = new Node("DIV", "/"); return DIV; }
 "+"		     {yylval.node = new Node("PLUS", "+"); return PLUS; }
 "-"		     {yylval.node = new Node("MINUS", "-"); return MINUS; }
+"%"		     {yylval.node = new Node("MOD", "%"); return MOD; }
 
 
 "!"            {return NOT;}
 "."		     {return DOT; }
 
 
-([0-9]+\.[0-9]*)              {yylval.node = new Node("FLOAT", std::string(yytext)); return FLOAT; }
-
-([1-9][0-9]*)|0               {yylval.node = new Node("INT", std::string(yytext)); return INT; }
-.                             { fprintf(stderr, "Invalid token\n"); exit(1); }
-
+{WHITESPACE}   		 { line += string(yytext);}
+{IDENTIFIER}  	     { yylval.node = new Node("ID", std::string(yytext)); return ID; }
+{MultiLineAnnotate}  {}
+{SingleLineAnnotate} {}
+{FLOATCONSTANT}      { yylval.node = new Node("FLOAT", std::string(yytext)); return FLOAT; }
+{DECIMALCONSTANT}    { yylval.node = new Node("INT", std::string(yytext)); return INT; }
+{ERROR}              { fprintf(stderr, "Invalid token\n"); exit(1); }
+{NEWLINE}			 { line = "";}
 %%
 
 int yywrap(void)

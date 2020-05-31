@@ -1,12 +1,15 @@
 %{
 #include "parserTreeNode.h"
+#include "errorHandler.h"
 #include <stdio.h>
 #include <iostream>
+#include "globalVar.h"
 extern char *yytext;
+extern int yylineno;
 extern int column;
 extern FILE *yyin;
 int yylex(void);
-void yyerror(char const *s);
+void yyerror(char *s,...);
 Node* root = NULL;
 %}
 
@@ -16,7 +19,7 @@ Node* root = NULL;
 
 %token <node> INT FLOAT
 %token <node> SEMI COMMA ASSIGNOP RELOP
-%token <node> PLUS MINUS STAR DIV
+%token <node> PLUS MINUS STAR DIV MOD
 %token <node> AND OR DOT NOT
 %token <node> TYPE
 %token <node> LP RP LB RB LC RC
@@ -134,6 +137,7 @@ Exp
 	| Exp STAR Exp					{$$=new Node("Ternary_Exp",3,$1,$2,$3);}
 	| Exp DIV Exp					{$$=new Node("Ternary_Exp",3,$1,$2,$3);}
 	| Exp RELOP Exp					{$$=new Node("Ternary_Exp",3,$1,$2,$3);}
+	| Exp MOD Exp					{$$=new Node("Ternary_Exp",3,$1,$2,$3);}
 	| Exp DOT ID					{$$=new Node("Dot_Exp",2,$1,$3);}
 	| LP Exp RP						{$$=$2;}
 	| MINUS Exp						{$$=new Node("Binary_Exp",2,$1,$2);}
@@ -152,11 +156,8 @@ Args
 	;
 
 %%
-void yyerror(char const *s)
-{
-	// fflush(stdout);
-	//printf("\n%*s\n%*s\n", column, "^", column, s);
-	printf("%----------s--------error here!\n",s);
-	// hasError = true;
-	// errorNum++;
+void yyerror(char *s,...){
+	Exception *e = new Exception(filename,funcname,yylineno);
+	e -> display();
+	cout << line << endl;
 }

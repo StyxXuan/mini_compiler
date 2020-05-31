@@ -6,6 +6,15 @@
 extern FILE *yyin;
 extern Node *root;
 
+string filename = "";
+string funcname = "";
+string line = "";
+
+void parseFilename(string inputFile){//获取文件名
+    const char *tmp = strrchr(inputFile.c_str(),'/');
+    filename = string(tmp).substr(1);
+}
+
 int yyparse();
 
 using namespace std;
@@ -41,6 +50,7 @@ int main(int argc, char **argv)
     inputFile = src_arg.getValue();
     outputFile = dst_arg.getValue();
     jsonFile = json_arg.getValue();
+    parseFilename(inputFile);
   } catch (TCLAP::ArgException& e)  // Catch any exceptions
   {\
     std::cerr << "Error: " << e.error() << " for arg " << e.argId()

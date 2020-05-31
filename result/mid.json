@@ -2,14 +2,22 @@
 	"label": "ExtDefList",
 	"children": [
 	{
-		"label": "ExtDefStr",
+		"label": "ExtDef",
 		"children": [
 		{
-			"label": "StructSpecifier",
+			"label": "TYPE"
+		},
+		{
+			"label": "FunDec",
 			"children": [
 			{
 				"label": "ID"
-			},
+			}
+			]
+		},
+		{
+			"label": "CompSt",
+			"children": [
 			{
 				"label": "DefList",
 				"children": [
@@ -61,68 +69,31 @@
 					]
 				}
 				]
-			}
-			]
-		}
-		]
-	},
-	{
-		"label": "ExtDefList",
-		"children": [
-		{
-			"label": "ExtDef",
-			"children": [
-			{
-				"label": "TYPE"
 			},
 			{
-				"label": "FunDec",
+				"label": "StmtList",
 				"children": [
 				{
-					"label": "ID"
-				},
-				{
-					"label": "VarList",
+					"label": "Stmt_exp",
 					"children": [
 					{
-						"label": "ParamDec",
+						"label": "Ass_Exp",
 						"children": [
-						{
-							"label": "TYPE"
-						},
 						{
 							"label": "ID"
-						}
-						]
-					},
-					{
-						"label": "VarList",
-						"children": [
+						},
 						{
-							"label": "ParamDec",
-							"children": [
-							{
-								"label": "TYPE"
-							},
-							{
-								"label": "ID"
-							}
-							]
+							"label": "INT"
 						}
 						]
 					}
 					]
-				}
-				]
-			},
-			{
-				"label": "CompSt",
-				"children": [
+				},
 				{
 					"label": "StmtList",
 					"children": [
 					{
-						"label": "Stmt_return",
+						"label": "Stmt_if_else",
 						"children": [
 						{
 							"label": "Ternary_Exp",
@@ -131,163 +102,16 @@
 								"label": "ID"
 							},
 							{
-								"label": "DIV"
+								"label": "RELOP"
 							},
 							{
-								"label": "Ternary_Exp",
-								"children": [
-								{
-									"label": "ID"
-								},
-								{
-									"label": "STAR"
-								},
-								{
-									"label": "ID"
-								}
-								]
-							}
-							]
-						}
-						]
-					}
-					]
-				}
-				]
-			}
-			]
-		},
-		{
-			"label": "ExtDefList",
-			"children": [
-			{
-				"label": "ExtDef",
-				"children": [
-				{
-					"label": "TYPE"
-				},
-				{
-					"label": "FunDec",
-					"children": [
-					{
-						"label": "ID"
-					}
-					]
-				},
-				{
-					"label": "CompSt",
-					"children": [
-					{
-						"label": "DefList",
-						"children": [
-						{
-							"label": "Def",
-							"children": [
-							{
-								"label": "StructSpecifier",
-								"children": [
-								{
-									"label": "ID"
-								}
-								]
-							},
-							{
-								"label": "DecList",
-								"children": [
-								{
-									"label": "Dec",
-									"children": [
-									{
-										"label": "ID"
-									}
-									]
-								}
-								]
+								"label": "INT"
 							}
 							]
 						},
 						{
-							"label": "DefList",
+							"label": "CompSt",
 							"children": [
-							{
-								"label": "Def",
-								"children": [
-								{
-									"label": "TYPE"
-								},
-								{
-									"label": "DecList",
-									"children": [
-									{
-										"label": "Dec",
-										"children": [
-										{
-											"label": "ID"
-										}
-										]
-									}
-									]
-								}
-								]
-							}
-							]
-						}
-						]
-					},
-					{
-						"label": "StmtList",
-						"children": [
-						{
-							"label": "Stmt_exp",
-							"children": [
-							{
-								"label": "Ass_Exp",
-								"children": [
-								{
-									"label": "Dot_Exp",
-									"children": [
-									{
-										"label": "ID"
-									},
-									{
-										"label": "ID"
-									}
-									]
-								},
-								{
-									"label": "INT"
-								}
-								]
-							}
-							]
-						},
-						{
-							"label": "StmtList",
-							"children": [
-							{
-								"label": "Stmt_exp",
-								"children": [
-								{
-									"label": "Ass_Exp",
-									"children": [
-									{
-										"label": "Dot_Exp",
-										"children": [
-										{
-											"label": "ID"
-										},
-										{
-											"label": "ID"
-										}
-										]
-									},
-									{
-										"label": "INT"
-									}
-									]
-								}
-								]
-							},
 							{
 								"label": "StmtList",
 								"children": [
@@ -301,42 +125,76 @@
 											"label": "ID"
 										},
 										{
-											"label": "Fun_Arg_Exp",
+											"label": "INT"
+										}
+										]
+									}
+									]
+								}
+								]
+							}
+							]
+						},
+						{
+							"label": "Stmt_if_else",
+							"children": [
+							{
+								"label": "Ternary_Exp",
+								"children": [
+								{
+									"label": "ID"
+								},
+								{
+									"label": "RELOP"
+								},
+								{
+									"label": "INT"
+								}
+								]
+							},
+							{
+								"label": "CompSt",
+								"children": [
+								{
+									"label": "StmtList",
+									"children": [
+									{
+										"label": "Stmt_exp",
+										"children": [
+										{
+											"label": "Ass_Exp",
 											"children": [
 											{
 												"label": "ID"
 											},
 											{
-												"label": "Args",
-												"children": [
-												{
-													"label": "Dot_Exp",
-													"children": [
-													{
-														"label": "ID"
-													},
-													{
-														"label": "ID"
-													}
-													]
-												},
-												{
-													"label": "Args",
-													"children": [
-													{
-														"label": "Dot_Exp",
-														"children": [
-														{
-															"label": "ID"
-														},
-														{
-															"label": "ID"
-														}
-														]
-													}
-													]
-												}
-												]
+												"label": "INT"
+											}
+											]
+										}
+										]
+									}
+									]
+								}
+								]
+							},
+							{
+								"label": "CompSt",
+								"children": [
+								{
+									"label": "StmtList",
+									"children": [
+									{
+										"label": "Stmt_exp",
+										"children": [
+										{
+											"label": "Ass_Exp",
+											"children": [
+											{
+												"label": "ID"
+											},
+											{
+												"label": "INT"
 											}
 											]
 										}

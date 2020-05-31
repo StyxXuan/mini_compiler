@@ -4,7 +4,7 @@ struct person{
 };
 
 int cal_bmi(int h, int w){
-    return w / (h*h);
+    return w + (h*h);
 }
 
 int main(){
@@ -14,4 +14,5 @@ int main(){
     a.weight = 40;
 
     result = cal_bmi(a.height, a.weight);
+    Print(result);
 }

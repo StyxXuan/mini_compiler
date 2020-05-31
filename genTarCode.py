@@ -123,16 +123,20 @@ def genTarCodeTriExp(tokens):
         codes.append("div " + reg1+ "," + reg2)
         codes.append("mflo " + reg_res)
         label_add[tokens[1]] = line_num
+    elif op == "%":
+        codes.append("div " + reg1+ "," + reg2)
+        codes.append("mfhi " + reg_res)
+        label_add[tokens[1]] = line_num
     elif op == "<":
         codes.append("slt " + reg_res +","+reg1+","+reg2)
     elif op == ">":
         codes.append("slt " + reg_res +","+reg2+","+reg1)
     elif op == "<=":
-        codes.append("slt " + reg_res +","+reg1+","+reg2)
-        codes.append("xori " + reg_res +","+reg_res+",1")
+        codes.append("sle " + reg_res +","+reg2+","+reg1)
     elif op == ">=":
-        codes.append("slt " + reg_res +","+reg2+","+reg1)
-        codes.append("xori " + reg_res +","+reg_res+",1")
+        codes.append("sge " + reg_res +","+reg1+","+reg2)
+    elif op == "==":
+        codes.append("seq " + reg_res +","+reg1+","+reg2)
 
     save_var_value(tokens[0], reg_res)
 

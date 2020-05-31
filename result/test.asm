@@ -2,7 +2,7 @@
 .text
 j main
 cal_bmi:
-subi $sp,$sp,80
+subi $sp,$sp,80z
 addi $at,$sp,0
 sw $a0,0($at)
 addi $at,$sp,4
