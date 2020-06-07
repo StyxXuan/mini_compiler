@@ -48,6 +48,19 @@ public:
     valType varValue;
 };
 
+class arrayNode{
+public:
+    arrayNode(string name, Type type, int eleNum){
+        this->name = name;
+        this->type = type;
+        this->eleNum = eleNum;
+    }
+
+    string name;
+    Type type;
+    int eleNum;
+};
+
 class strNode{
 public:
     strNode(string name){
@@ -109,12 +122,17 @@ public:
         this->strVarMap.insert(pair<string, strVar*>(svar->varName, svar));
     }
 
+    void addArrayVar(arrayNode *anode){
+        this->arrayVarMap.insert(pair<string, arrayNode*>(anode->name, anode));
+    }
+    
     string name;
     Type type;
     int lineNum;
     map<string, string> paralist;
     map<string, varNode*> localVar;
     map<string, strVar*> strVarMap;
+    map<string, arrayNode*> arrayVarMap;
     int paraNum;
 };
 

@@ -87,15 +87,21 @@ void irCodeGenerator::genIrGlobalVal(Type type, Node* node){
     if(DEBUG)
         cout << ">> genIrGlobalVal" << endl;
 
-    string ID = node->children[0]->getVal();
-    varNode* vnode = new varNode(ID, type);
-    this->varNodes.insert(pair<string, varNode*>(ID, vnode));
-    string varName = addID(ID);
-    Quad quad("", "global:", varName, "");
-    this->insertQuad(quad);
-
+    if(node->children.size() > 1){
+        varNode* vnode = genIrArray(type, node->children[0]);
+        this->addvarNode(vnode);
+    }else{
+        string ID = node->children[0]->getVal();
+        varNode* vnode = new varNode(ID, type);
+        this->varNodes.insert(pair<string, varNode*>(ID, vnode));
+        string varName = addID(ID);
+        Quad quad("", "global:", varName, "");
+        this->insertQuad(quad);
+    }
+    
     if(node->children.size() > 1){
         genIrGlobalVal(type, node->children[1]);
+
     }
 }
 
@@ -142,9 +148,14 @@ void irCodeGenerator::genIrParamDec(funNode *func, Node *node){
         
     if(!node->children[0]->getType().compare("TYPE")){
         Type type = this->getType(node->children[0]);
-        string ID = node->children[1]->getVal();
-        varNode* vnode = new varNode(ID, type);
-        func->addParaList(vnode);
+        if(node->children[1]->children.size()>1){
+            varNode* vnode = genIrArray(type, node->children[0]);
+            func->addLocalVar(vnode);
+        }else{
+            string ID = node->children[1]->getVal();
+            varNode* vnode = new varNode(ID, type);
+            func->addParaList(vnode);
+        }    
     }else{
         Type type = STRUCT_TYPE;
         string ID = node->children[1]->getVal();
@@ -245,17 +256,23 @@ void irCodeGenerator::genIrDec(funNode *func, Type type, Node *node){
     if(DEBUG)
         cout << ">> genIrDec " << node->children.size() << endl;
 
-    string ID = node->children[0]->getVal();
-    string varName = addID(ID);
-    varNode* vnode = new varNode(ID, type);
-    Quad quad("", "var:", varName, "");
-    this->insertQuad(quad);
-
-    if(node->children.size()>1){
-        C_Value value = genIrExp(func, node->children[1]);
-        vnode->setVal(value.val);
-        Quad quad(varName, value.varName, "", "");
+    
+    varNode* vnode;
+    if(node->children[0]->children.size()>1){
+        varNode* vnode = genIrArray(type, node->children[0]);
+    }else{
+        string ID = node->children[0]->getVal();
+        string varName = addID(ID);
+        vnode = new varNode(ID, type);
+        Quad quad("", "var:", varName, "");
         this->insertQuad(quad);
+
+        if(node->children.size()>1){
+            C_Value value = genIrExp(func, node->children[1]);
+            vnode->setVal(value.val);
+            Quad quad(varName, value.varName, "", "");
+            this->insertQuad(quad);
+        }
     }
     func->addLocalVar(vnode);
     if(DEBUG)
@@ -389,8 +406,14 @@ C_Value irCodeGenerator::genIrExp(funNode* func, Node *node){
 
         value.varName = varName;
         return value;
+    }else if(!node->getType().compare("ArrayExp")){
+        string ID = node->children[0]->getVal();
+        C_Value exp = genIrExp(func, node->children[1]);
+        string tempVar = getTempVar();
+        Quad quad(tempVar, exp.varName, "&"+ID, "+");
+        this->insertQuad(quad);        
+        value.varName = "*"+tempVar;
     }
-
     return value;
 }
 
@@ -518,6 +541,15 @@ void irCodeGenerator::genIrDoWhile(funNode* func, Node *node){
     this->insertQuad(quad4); 
 }
 	
+varNode* irCodeGenerator::genIrArray(Type type, Node *node){
+    string ID = node->children[0]->getVal();
+    string Num = node->children[1]->getVal();
+    int eleNum = atoi(Num.c_str());
+    Quad quad("", "Array", ID, Num);
+    this->insertQuad(quad); 
+    return new varNode(ID, type);
+}
+
 Type irCodeGenerator::getType(Node *node){
     if(DEBUG)
         cout << ">> getType" << endl;

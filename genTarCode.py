@@ -59,37 +59,67 @@ def get_var_value(var_name):
         return "$a"+var_name[1]
 
     reg_name = applyReg()
-    if var_name in globalVarList:
-        codes.append("lw "+reg_name+","+var_name)
+
+    if '*' in var_name:
+        var_name = var_name.replace('*', '')
+        add_reg = get_var_value(var_name)
+        codes.append("lw "+reg_name+",0("+add_reg+")")
         return reg_name
 
-    if var_name not in map:
-        map[var_name] = sp
-        sp = sp + 4
+    if var_name in globalVarList:
+        if '&' in var_name:
+            var_name = var_name.replace('&', '')
+            codes.append("la "+reg_name+","+var_name)
+        else:
+            codes.append("lw "+reg_name+","+var_name)
+        return reg_name
 
-    codes.append("addi $at,$sp,"+str(map[var_name]))
-    codes.append("lw "+reg_name+",0($at)")
+    # if 
+
+    if not '&' in var_name:
+        add_var(var_name)
+        codes.append("addi $at,$sp,"+str(map[var_name]))
+        codes.append("lw "+reg_name+",0($at)")
+    else:
+        var_name = var_name.replace('&', '')
+        codes.append("addi "+reg_name+",$sp,"+str(map[var_name]))
+        
     return reg_name
+
+def debug_print(regName):
+    codes.append("move $a0,"+regName)
+    codes.append("li $v0,1")
+    codes.append("syscall")
+    codes.append("la $a0,LB")
+    codes.append("li $v0,4")
+    codes.append("syscall")
 
 def save_var_value(var_name, value_reg):
     global sp
+    if '*' in var_name:
+        var_name = var_name.replace('*', '')
+        res_reg = get_var_value(var_name)
+        codes.append("sw "+value_reg+",0("+res_reg+")")
+        return
+
     if var_name in globalVarList:
         codes.append("la $at,"+var_name)
         codes.append("sw "+value_reg+",0($at)")
         return
     
     elif var_name not in map:
-        map[var_name] = sp
-        sp = sp + 4
+        add_var(var_name)
 
     codes.append("addi $at,$sp,"+str(map[var_name]))
     codes.append("sw "+value_reg+",0($at)")
 
-def add_var(var_name):
+def add_var(var_name, data_size=4):
     global sp
+    # print(map)
     if var_name not in map:
         map[var_name] = sp
-        sp = sp + 4
+        # print(map)
+        sp = sp + data_size
 
 
 def genTarCodeBinExp(tokens):
@@ -141,6 +171,7 @@ def genTarCodeTriExp(tokens):
     save_var_value(tokens[0], reg_res)
 
 def genTarCodeCallExp(tokens):
+    # print(tokens)
     if(tokens[2] == "-"):
         reg1 = get_var_value(tokens[2])
         reg_res = applyReg()
@@ -169,11 +200,17 @@ def genTarCode(tokens):
     global sp
     global reg_a
     releaseReg()
-
-    if tokens[0] == "var:":
+    # print(tokens)
+    if tokens[0] == 'var:':
         release_inputReg()
         # print("var:   " +  tokens[1])
         add_var(tokens[1])
+    
+    elif tokens[0] == "Array":
+        release_inputReg()
+        # print("var:   " +  tokens[1])
+        dsize = int(tokens[2])*4
+        add_var(tokens[1],data_size=dsize)
 
     elif tokens[0] == "Func:":
         release_inputReg()
@@ -181,7 +218,6 @@ def genTarCode(tokens):
         codes.append("subi $sp,$sp,80")
         for i in range(3):
             save_var_value("temp_a"+str(i), "$a"+str(i))
-
 
     elif tokens[0] == "RETURN":
         release_inputReg()
@@ -239,9 +275,8 @@ with open(file_path, 'r') as f:
     for line in f:
         line = line.strip()
         tokens = line.split(" ")
-        if "" in tokens:
+        if '' in tokens:
             tokens.remove('')
-        
         # print(tokens)
         if tokens[0] == "global:":
             add_global_var(tokens)

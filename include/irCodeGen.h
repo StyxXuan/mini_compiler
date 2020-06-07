@@ -5,6 +5,7 @@
 #include <string>
 #include <map>
 #include <list>
+#include <stdlib.h>
 #include <fstream>
 #define DEBUG false
 
@@ -42,6 +43,7 @@ public:
     void genIrFor(funNode *func, Node *node);
     void genIrDoWhile(funNode *func, Node *node);
     void genIrReturn(funNode *func, Node *node);
+    varNode* genIrArray(Type type, Node *node);
 
     Type getType(Node *node);
     void insertQuad(Quad quad);
@@ -55,8 +57,16 @@ public:
     string toVarName (string ID);
     string addID(string ID);
     void writeToFile(string filePath);
+
+    void addvarNode(varNode* vnode){
+        this->varNodes.insert(pair<string, varNode*>(vnode->name, vnode));
+    }
     void addStrNode(strNode* snode){
         this->strMap.insert(pair<string, strNode*>(snode->name, snode));
+    }
+
+    void addArrayNode(arrayNode* anode){
+        this->arrayMap.insert(pair<string, arrayNode*>(anode->name, anode));
     }
 
 private:
@@ -65,6 +75,7 @@ private:
     map<string, varNode*> varNodes;
     map<string, string> IDVarMap;
     map<string, strNode*> strMap;
+    map<string, arrayNode*> arrayMap;
     
     list<Quad> IrCodes;
     int lineNum;

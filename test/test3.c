@@ -1,7 +1,7 @@
 int main(){
     int a;
     int b;
-    a = 1;
+    a = 3;
     if(a == 1){
         b=1;
     }else if(a==2){
@@ -9,4 +9,5 @@ int main(){
     }else{
         b=3;
     }
+    Print(b);
 }

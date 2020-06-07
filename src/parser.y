@@ -72,7 +72,7 @@ VarDec
 	// :ID							{$$=new Node("VarDec",1,$1);}
 	:ID								{$$=$1;}
 	// array
-	// | VarDec LB INT RB			{$$=new Node("VarDec",4,$1,$2,$3,$4);}
+	| ID LB INT RB					{$$=new Node("ArrayDec",2,$1,$3);}
 	;
 
 FunDec
@@ -145,6 +145,7 @@ Exp
 	// value from function
 	| ID LP Args RP					{$$=new Node("Fun_Arg_Exp",2,$1,$3);}
 	| ID LP RP						{$$=new Node("Fun_Exp",1,$1);}
+	| Exp LB Exp RB					{$$=new Node("ArrayExp",2,$1,$3);}
 	| ID							{$$=$1;}
 	| INT							{$$=$1;}
 	| FLOAT							{$$=$1;}
